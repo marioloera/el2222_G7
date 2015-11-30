@@ -32,13 +32,14 @@ def updateAngle(angle):
 
 	return newAngle
 
+x=50
 #angle gyro
 def gyro():
     poll_interval = imu.IMUGetPollInterval()
     prom1 = 0
     prom2 = 0
     prom3 = 0
-    for n in range(1,500) :
+    for n in range(1,x) :
         if imu.IMURead():
             data = imu.getIMUData()
             gyroData = data["gyro"]
@@ -49,7 +50,7 @@ def gyro():
             prom2 = dat2 + prom2
             prom3 = dat3 + prom3
             time.sleep(poll_interval*1.0/1000.0)
-    angle = math.degrees(math.atan2(prom2,prom1))
+    angle = math.degrees(math.atan2(prom3/x,prom2/x))
     return angle
 
 #angle accel
@@ -58,7 +59,7 @@ def initialAngle():
     prom1 = 0
     prom2 = 0
     prom3 = 0
-    for n in range(1,500) :
+    for n in range(1,x) :
         if imu.IMURead():
             data = imu.getIMUData()
             accelData = data["accel"]
@@ -69,8 +70,7 @@ def initialAngle():
             prom2 = dat2 + prom2
             prom3 = dat3 + prom3
             time.sleep(poll_interval*1.0/1000.0)
-    angle = math.degrees(math.atan2(prom2,prom1))
-    print angle
+    angle = math.degrees(math.atan2(prom3/x,prom2/x))
     return angle
 
 #Initialize pins in motorcontroller script
@@ -89,7 +89,11 @@ raw_input("------------PRESS ENTER WHEN READY TO START CONTROL LOOP------------"
 # Define previous time as time now
 
 currentAngle=initialAngle()
-
+controlAngle=initialAngle()
+error=0
+kp=1
+ki=0
+kd=0
 
 try:
         while True:
@@ -97,7 +101,14 @@ try:
             dt=currT-initT
             initT=currT
             currentAngle=updateAngle(currentAngle)
+            error=currentAngle-controlAngle
+            P_term=kp*error
+            #D_term=kd
+            u=P_term
+            print (str(currentAngle)+ "angle" + " " + str(u) + "\n")
+            motors.set_speed(u)
 #        # Fill in here
+
 except KeyboardInterrupt:
 	pass
 # Stop PWM signals
