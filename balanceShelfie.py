@@ -91,9 +91,10 @@ raw_input("------------PRESS ENTER WHEN READY TO START CONTROL LOOP------------"
 currentAngle=initialAngle()
 controlAngle=initialAngle()
 error=0
-kp=1
-ki=0
-kd=0
+kp=30
+ki=kp/5
+kd=0.000
+dt=0.001
 
 try:
         while True:
@@ -103,9 +104,11 @@ try:
             currentAngle=updateAngle(currentAngle)
             error=currentAngle-controlAngle
             P_term=kp*error
-            #D_term=kd
-            u=P_term
-            print (str(currentAngle)+ "angle" + " " + str(u) + "\n")
+            I_term=(ki*error)+I_term
+            D_term=kd*dt
+
+            u=P_term+I_term+D_term
+            print (str(currentAngle)+ " angle" + " " + str(u) + " P_term \n")
             motors.set_speed(u)
 #        # Fill in here
 

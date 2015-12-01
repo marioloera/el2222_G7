@@ -25,8 +25,10 @@ motCtrl2.start(0)
 
 
 def set_speed(speed):
+
     absspeed = abs(speed)
     absspeed = int(min(absspeed, 99.9))
+    print "abs_speed= "absspeed
     if speed > 0:
         GPIO.output(input1, 1)
         GPIO.output(input2, 0)
